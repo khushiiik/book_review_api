@@ -28,12 +28,26 @@ def add_book():
     publish_year = data.get('publish_year')
 
     if not title or not author:
-        return jsonify({'error':'Title and Author are required!'}), 400
+        return jsonify({
+            'error':'Title and Author are required!'
+            }), 400
     
-    new_book = Book(title=title, author=author, publish_year=publish_year)
+    new_book = Book(
+        title=title, 
+        author=author, 
+        publish_year=publish_year
+        )
     db.session.add(new_book)
     db.session.commit()
-    return jsonify({'message': 'Book created!', 'id':new_book.id}), 201
+    return jsonify({
+        'message': 'Book created!',
+        'book':{
+        'id':new_book.id,
+        'title': new_book.title,
+        'author': new_book.author,
+        'published_year': new_book.published_year
+        }
+    }), 201
 
 #PUT update book
 @book_bp.route('/books/<int:book_id>', methods=['PUT'])
@@ -46,7 +60,9 @@ def update_book(book_id):
     book.publish_year = data.get('publish_year', book.publish_year)
 
     db.session.commit()
-    return jsonify({'message':'Book Updated'}), 200
+    return jsonify({
+        'message':'Book Updated'
+        }), 200
 
 #DELETE book
 @book_bp.route('/books/<int:book_id>', methods=['DELETE'])
@@ -54,4 +70,6 @@ def delete_book(book_id):
     book = Book.query.get_or_404(book_id)
     db.session.delete
     db.session.commit()
-    return jsonify({'message':'Book deleted!'}), 200
+    return jsonify({
+        'message':'Book deleted!'
+        }), 200
