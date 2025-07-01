@@ -1,8 +1,10 @@
 from flask import Flask
 from database import db
 from model import Book,Review
+from routes.book_routes import book_bp
 
 app = Flask(__name__)
+app.register_blueprint(book_bp)
 
 #database config(SQLit)
 app.config['SQLALCHEMY_DATABSE_URI'] = 'sqlite:///book_reviews.db'
