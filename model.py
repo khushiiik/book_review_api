@@ -22,7 +22,7 @@ class Review(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     reviewer_name = db.Column(db.String(100), nullable=False)
-    contact = db.Column(db.Text, nullable=False)
+    content = db.Column(db.Text, nullable=False)
     rating = db.Column(db.Integer,  nullable=False)
     book_id = db.Column(db.Integer, db.ForeignKey('books.id'), nullable=False)
     create_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
