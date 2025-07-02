@@ -2,31 +2,28 @@ from flask import Blueprint, request, jsonify
 from model import Book, Review
 from database import db
 
-review_bp = Blueprint('review_bp',__name__)
+review_bp = Blueprint('review_bp', __name__)
 
+# POST a review for a specific book
 @review_bp.route('/books/<int:book_id>/reviews', methods=['POST'])
 def add_review(book_id):
     book = Book.query.get(book_id)
     if not book:
-        return jsonify({
-            'error': 'Book not found'
-            }), 404
-    
+        return jsonify({'error': 'Book not found'}), 404
+
     data = request.get_json()
     reviewer_name = data.get('reviewer_name')
     content = data.get('content')
     rating = data.get('rating')
 
-    if not reviewer_name or not content or not rating:
-        return jsonify({
-            'message': 'All fields are required'
-            }), 400
-    
+    if not reviewer_name or not content or rating is None:
+        return jsonify({'message': 'All fields are required'}), 400
+
     review = Review(
-        reviewer_name = reviewer_name,
-        content = content,
-        rating = rating,
-        book_id = book.id
+        reviewer_name=reviewer_name,
+        content=content,
+        rating=rating,
+        book_id=book.id
     )
 
     db.session.add(review)
@@ -34,23 +31,22 @@ def add_review(book_id):
 
     return jsonify({
         'message': 'Review added',
-        'review':{
+        'review': {
             'id': review.id,
             'reviewer_name': review.reviewer_name,
             'content': review.content,
             'rating': review.rating,
-            'book_id':review.book_id,
+            'book_id': review.book_id,
         }
     }), 201
 
+# ✅ FIXED: GET all reviews for a specific book
 @review_bp.route('/books/<int:book_id>/reviews', methods=['GET'])
 def get_review(book_id):
     book = Book.query.get(book_id)
     if not book:
-        return jsonify({
-            'massage':'Book not found!',
-        }), 404
-    
+        return jsonify({'message': 'Book not found!'}), 404
+
     reviews = Review.query.filter_by(book_id=book.id).all()
     result = []
     for review in reviews:
@@ -63,15 +59,14 @@ def get_review(book_id):
         })
 
     return jsonify({
-        'book':{
+        'book': {
             'id': book.id,
             'title': book.title,
         },
-        'review':{
-            'review':result,
-        }
+        'reviews': result 
     }), 200
 
+# PUT update a review
 @review_bp.route('/reviews/<int:review_id>', methods=['PUT'])
 def update_review(review_id):
     review = Review.query.get_or_404(review_id)
@@ -86,6 +81,7 @@ def update_review(review_id):
         "review": review.serialize()
     }), 200
 
+# DELETE a review
 @review_bp.route('/reviews/<int:review_id>', methods=['DELETE'])
 def delete_review(review_id):
     review = Review.query.get_or_404(review_id)
