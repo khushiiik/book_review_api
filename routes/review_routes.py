@@ -43,7 +43,7 @@ def add_review(book_id):
         }
     }), 201
 
-@review_bp.route('/book/<int:book_id>/reviews', methods=['GET'])
+@review_bp.route('/books/<int:book_id>/reviews', methods=['GET'])
 def get_review(book_id):
     book = Book.query.get(book_id)
     if not book:
