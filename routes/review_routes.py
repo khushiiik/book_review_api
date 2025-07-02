@@ -71,3 +71,25 @@ def get_review(book_id):
             'review':result,
         }
     }), 200
+
+@review_bp.route('/reviews/<int:review_id>', methods=['PUT'])
+def update_review(review_id):
+    review = Review.query.get_or_404(review_id)
+    data = request.get_json()
+
+    review.reviewer_name = data.get("reviewer_name", review.reviewer_name)
+    review.content = data.get("content", review.content)
+    db.session.commit()
+
+    return jsonify({
+        "message": "Review updated successfully",
+        "review": review.serialize()
+    }), 200
+
+@review_bp.route('/reviews/<int:review_id>', methods=['DELETE'])
+def delete_review(review_id):
+    review = Review.query.get_or_404(review_id)
+    db.session.delete(review)
+    db.session.commit()
+
+    return jsonify({"message": "Review deleted"}), 200
